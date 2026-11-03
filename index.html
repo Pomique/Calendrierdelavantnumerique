@@ -317,6 +317,7 @@ function montrerToast(msg){
 }
 
 function construire(){
+  if (!grille) return;
   grille.innerHTML = "";
   const max = jourMax();
   DATA.forEach((item, i) => {
@@ -397,24 +398,7 @@ function renderMiniQuiz(it, container){
     const opts = document.createElement("div");
     opts.className = "q-options";
     qObj.options.forEach((optText, oIdx) => {
-      opts.innerHTML += `<label><input type="radio" name="q${idx}" value="${oIdx}"> ${optText}</label>`;
-    });
-    qDiv.appendChild(opts);
-    box.appendChild(qDiv);
-  });
-
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "btn-valider-quiz";
-  btn.textContent = "Valider mes réponses";
-
-  const res = document.createElement("div");
-  res.className = "quiz-resultat";
-
-  btn.addEventListener("click", () => {
-    let score = 0;
-    it.questions.forEach((qObj, idx) => {
-      const selected = box.querySelector(`input[name="q${idx}"]:checked`);
+      opts.innerHTML += `<label><input type="radio" name="q${idx}" value="${oIdx}"> ${optText}</label>`; }); qDiv.appendChild(opts); box.appendChild(qDiv); });  const btn = document.createElement("button"); btn.type = "button"; btn.className = "btn-valider-quiz"; btn.textContent = "Valider mes réponses";  const res = document.createElement("div"); res.className = "quiz-resultat";  btn.addEventListener("click", () => { let score = 0; it.questions.forEach((qObj, idx) => { const selected = box.querySelector(`input[name="q${idx}"]:checked`);
       if (selected && parseInt(selected.value) === qObj.correct) {
         score++;
       }
@@ -442,52 +426,11 @@ function renderVideo(it, container){
 
   const vidDiv = document.createElement("div");
   vidDiv.className = "video-container";
-  vidDiv.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${it.videoId}" title="Vidéo pédagogique" allowfullscreen></iframe>`;
-  container.appendChild(vidDiv);
-
-  const desc = document.createElement("p");
-  desc.className = "texte";
-  desc.style.marginTop = "1rem";
-  desc.textContent = it.desc;
-  container.appendChild(desc);
-}
-
-function renderFinalQuiz(it, container){
-  const intro = document.createElement("p");
-  intro.className = "texte";
-  intro.textContent = it.intro;
-  container.appendChild(intro);
-
-  const box = document.createElement("div");
-  box.className = "quiz-box";
-
-  it.questions.forEach((qObj, idx) => {
-    const qDiv = document.createElement("div");
-    qDiv.className = "q-item";
-    qDiv.innerHTML = `<p>${qObj.q}</p>`;
+  vidDiv.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${it.videoId}" title="Vidéo pédagogique" allowfullscreen></iframe>`; container.appendChild(vidDiv);  const desc = document.createElement("p"); desc.className = "texte"; desc.style.marginTop = "1rem"; desc.textContent = it.desc; container.appendChild(desc); }  function renderFinalQuiz(it, container){ const intro = document.createElement("p"); intro.className = "texte"; intro.textContent = it.intro; container.appendChild(intro);  const box = document.createElement("div"); box.className = "quiz-box";  it.questions.forEach((qObj, idx) => { const qDiv = document.createElement("div"); qDiv.className = "q-item"; qDiv.innerHTML = `<p>${qObj.q}</p>`;
     const opts = document.createElement("div");
     opts.className = "q-options";
     qObj.options.forEach((optText, oIdx) => {
-      opts.innerHTML += `<label><input type="radio" name="fq${idx}" value="${oIdx}"> ${optText}</label>`;
-    });
-    qDiv.appendChild(opts);
-    box.appendChild(qDiv);
-  });
-
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "btn-valider-quiz";
-  btn.textContent = "Valider l'examen final";
-
-  const res = document.createElement("div");
-  res.className = "quiz-resultat";
-
-  btn.addEventListener("click", () => {
-    let score = 0;
-    let correctionHTML = '<div class="correction-container"><h3>Correction détaillée :</h3>';
-
-    it.questions.forEach((qObj, idx) => {
-      const selected = box.querySelector(`input[name="fq${idx}"]:checked`);
+      opts.innerHTML += `<label><input type="radio" name="fq${idx}" value="${oIdx}"> ${optText}</label>`; }); qDiv.appendChild(opts); box.appendChild(qDiv); });  const btn = document.createElement("button"); btn.type = "button"; btn.className = "btn-valider-quiz"; btn.textContent = "Valider l'examen final";  const res = document.createElement("div"); res.className = "quiz-resultat";  btn.addEventListener("click", () => { let score = 0; let correctionHTML = '<div class="correction-container"><h3>Correction détaillée :</h3>';  it.questions.forEach((qObj, idx) => { const selected = box.querySelector(`input[name="fq${idx}"]:checked`);
       const userAnsIdx = selected ? parseInt(selected.value) : -1;
       const isCorrect = userAnsIdx === qObj.correct;
 
@@ -499,8 +442,7 @@ function renderFinalQuiz(it, container){
       correctionHTML += `
         <div class="corr-item ${isCorrect ? 'correct' : 'incorrect'}">
           <div class="corr-q">${qObj.q}</div>
-          <div class="corr-ans">${isCorrect ? '✅' : '❌'} <b>Votre réponse :</b> ${userAnsText}</div>
-          ${!isCorrect ? `<div class="corr-ans"><b>Bonne réponse :</b> ${correctAnsText}</div>` : ''}
+          <div class="corr-ans">${isCorrect ? '✅' : '❌'} <b>Votre réponse :</b> ${userAnsText}</div>${!isCorrect ? `<div class="corr-ans"><b>Bonne réponse :</b> ${correctAnsText}</div>` : ''}
           <div class="corr-explain">👉 ${qObj.explain}</div>
         </div>
       `;
@@ -534,64 +476,4 @@ function renderFinalQuiz(it, container){
         <p style="font-size:0.8rem; color:#777; margin-top:1.5rem;">Délivré le ${new Date().toLocaleDateString('fr-FR')} — Projet Open Source</p>
       </div>
 
-      <button type="button" class="btn-dl-certificat" id="btnDownloadPDF">📥 Télécharger mon diplôme (PDF)</button>
-      
-      ${correctionHTML}
-    `;
-
-    btn.style.display = "none";
-
-    document.getElementById("btnDownloadPDF").addEventListener("click", () => {
-      const element = document.getElementById("diplomePDF");
-      const opt = {
-        margin:       1,
-        filename:     `Diplome_Cybersecurite_${score}sur10.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'cm', format: 'a4', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
-    });
-  });
-
-  box.appendChild(btn);
-  box.appendChild(res);
-  container.appendChild(box);
-}
-
-function fermer(){
-  fenetre.close();
-  construire();
-}
-document.getElementById("fermer").addEventListener("click", fermer);
-fenetre.addEventListener("click", e => { if (e.target === fenetre) fermer(); });
-fenetre.addEventListener("cancel", e => { e.preventDefault(); fermer(); });
-
-(function(){
-  const bTest = document.getElementById("btn-test"), bReset = document.getElementById("btn-reset");
-  if (!bTest || !bReset) return;
-  function maj(){
-    bTest.setAttribute("aria-pressed", MODE_TEST);
-    bTest.textContent = MODE_TEST ? "Désactiver le mode test" : "Activer le mode test";
-  }
-  bTest.addEventListener("click", () => { MODE_TEST = !MODE_TEST; maj(); construire(); });
-  bReset.addEventListener("click", () => { ouvertes = []; sauver(); construire(); montrerToast("Toutes les cases sont refermées."); });
-  maj();
-})();
-
-(function(){
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const n = document.getElementById("neige");
-  for (let i = 0; i < 40; i++) {
-    const f = document.createElement("i"), s = 2 + Math.random() * 4;
-    f.style.cssText = "left:" + Math.random() * 100 + "%;width:" + s + "px;height:" + s + "px;" +
-      "--dx:" + (Math.random() * 80 - 40) + "px;animation-duration:" + (8 + Math.random() * 12) + "s;" +
-      "animation-delay:-" + Math.random() * 20 + "s;opacity:" + (0.3 + Math.random() * 0.5);
-    n.appendChild(f);
-  }
-})();
-
-construire();
-</script>
-</body>
-</html>
+      <button type="button" class="btn-dl
