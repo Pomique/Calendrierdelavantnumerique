@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendrier de l'Avent - Culture & Sécurité Numérique</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-opened: #334155;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --locked-color: #475569;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      max-width: 700px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .controls {
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .toggle-btn {
+      background-color: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      background-color: var(--accent);
+      color: var(--bg-color);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    .door {
+      perspective: 1000px;
+      height: 160px;
+    }
+
+    .door-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .door.opened .door-inner {
+      transform: rotateY(180deg);
+    }
+
+    .door-front, .door-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .door-front {
+      background-color: var(--card-bg);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .door-front:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .door-front .day-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .door-front .tag {
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .door-back {
+      background-color: var(--card-opened);
+      transform: rotateY(180deg);
+      justify-content: space-between;
+      text-align: left;
+    }
+
+    .door-back .category {
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .door-back .content {
+      font-size: 0.85rem;
+      line-height: 1.3;
+      color: var(--text-main);
+      margin: auto 0;
+    }
+
+    .door.locked .door-front {
+      background-color: #111827;
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .door.locked .door-front .day-number {
+      color: var(--locked-color);
+    }
+
+    footer {
+      margin-top: 3rem;
+      color: var(--
