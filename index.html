@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calendrier de l’Avent numérique</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
   --nuit:#0b1f1c; --sapin:#12332d; --sapin2:#1a4a41; --rouge:#b3261e; --rouge2:#d8453a;
@@ -156,6 +155,12 @@ dialog[open]{animation:ouvre .35s cubic-bezier(.2,.9,.3,1.2)}
 .certificat .sous-titre{font-size:0.9rem;text-transform:uppercase;letter-spacing:1px;color:#666;margin-bottom:1rem;}
 .trophee-badge{font-size:3rem;margin:.5rem 0}
 
+.quiz-resultat.echec{background:#fff7ed;color:#9a3412;border:1px solid #fb923c}
+.prenom{display:block;margin:1rem 0 .2rem;font-weight:600;color:var(--encre)}
+.prenom input{display:block;margin-top:.4rem;width:100%;font:inherit;padding:.6rem .8rem;border-radius:8px;border:2px solid var(--sapin2);background:#fff}
+.dl-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem}
+.lien-video{font-size:.9rem;color:#555}
+.lien-video a{color:var(--rouge);font-weight:600}
 .fermer{
   position:absolute;top:.7rem;right:.8rem;width:2.6rem;height:2.6rem;border-radius:50%;
   border:2px solid var(--rouge);background:var(--creme);color:var(--rouge);font-size:1.5rem;cursor:pointer;line-height:1;
@@ -236,7 +241,9 @@ const DATA = [
  {
    c:"video", type:"video", t:"Comprendre le Phishing (Hameçonnage)",
    intro:"Découvre en vidéo comment déjouer les pièges des arnaques par SMS ou emails grâce aux capsules de sensibilisation.",
-   videoId:"9bZkp7q19f0", 
+   embed:"https://www.dailymotion.com/embed/video/x9m92k4",
+   lien:"https://www.dailymotion.com/video/x9m92k4",
+   fiche:"https://www.cybermalveillance.gouv.fr/tous-nos-contenus/fiches-reflexes/hameconnage-phishing",
    desc:"Analyse toujours l'adresse de l'expéditeur et passe ta souris sur les liens sans cliquer avant d'entrer la moindre information personnelle."
  },
  {c:"harcelement",t:"Garde les preuves",x:"Fais des captures d’écran de chaque message, commentaire ou publication. Note aussi le pseudo, l’adresse (URL), la date et l’heure. Ne supprime rien, même si c’est pénible à relire.",r:"Sans preuves, il est beaucoup plus difficile de faire retirer les contenus ou de porter plainte."},
@@ -443,7 +450,8 @@ function renderVideo(it, container){
 
   const vidDiv = document.createElement("div");
   vidDiv.className = "video-container";
-  vidDiv.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${it.videoId}" title="Vidéo pédagogique" allowfullscreen></iframe>`;
+  const src = it.embed || ("https://www.youtube-nocookie.com/embed/" + it.videoId);
+  vidDiv.innerHTML = `<iframe src="${src}" title="Vidéo pédagogique" allowfullscreen loading="lazy"></iframe>`;
   container.appendChild(vidDiv);
 
   const desc = document.createElement("p");
@@ -451,6 +459,15 @@ function renderVideo(it, container){
   desc.style.marginTop = "1rem";
   desc.textContent = it.desc;
   container.appendChild(desc);
+
+  if (it.lien || it.fiche) {
+    const l = document.createElement("p");
+    l.className = "lien-video";
+    l.innerHTML = "La vidéo ne s’affiche pas ? " +
+      (it.lien ? '<a href="' + it.lien + '" target="_blank" rel="noopener">Ouvre-la ici</a>. ' : "") +
+      (it.fiche ? 'Fiche officielle : <a href="' + it.fiche + '" target="_blank" rel="noopener">cybermalveillance.gouv.fr</a>.' : "");
+    container.appendChild(l);
+  }
 }
 
 function renderFinalQuiz(it, container){
@@ -458,6 +475,14 @@ function renderFinalQuiz(it, container){
   intro.className = "texte";
   intro.textContent = it.intro;
   container.appendChild(intro);
+
+  const lab = document.createElement("label");
+  lab.className = "prenom";
+  lab.textContent = "Ton prénom (il sera écrit sur ton diplôme)";
+  const inpNom = document.createElement("input");
+  inpNom.type = "text"; inpNom.id = "prenomDiplome"; inpNom.maxLength = 40; inpNom.autocomplete = "given-name";
+  lab.appendChild(inpNom);
+  container.appendChild(lab);
 
   const box = document.createElement("div");
   box.className = "quiz-box";
@@ -485,6 +510,7 @@ function renderFinalQuiz(it, container){
 
   btn.addEventListener("click", () => {
     let score = 0;
+    const nom = (document.getElementById("prenomDiplome").value || "").trim();
     let correctionHTML = '<div class="correction-container"><h3>Correction détaillée :</h3>';
 
     it.questions.forEach((qObj, idx) => {
@@ -528,38 +554,108 @@ function renderFinalQuiz(it, container){
       <div class="certificat" id="diplomePDF">
         <h3>DIPLÔME DE SÉCURITÉ NUMÉRIQUE</h3>
         <p class="sous-titre">Calendrier de l'Avent Cybersécurité & Vies Privées</p>
-        <p>Décerné pour avoir complété le parcours d'évaluation final avec le score de :</p>
+        <p>${nom ? 'Décerné à <b>' + esc(nom) + '</b> pour avoir' : 'Décerné pour avoir'} complété le parcours d'évaluation final avec le score de :</p>
         <p style="font-size:1.4rem; font-weight:bold; margin:0.5rem 0; color:var(--rouge);">${score} / 10</p>
         <div class="trophee-badge">${trophee}</div>
         <p style="font-weight:bold; color:var(--encre); margin-top:0.5rem;">${mention}</p>
         <p style="font-size:0.8rem; color:#777; margin-top:1.5rem;">Délivré le ${new Date().toLocaleDateString('fr-FR')} — Projet Open Source</p>
       </div>
 
-      <button type="button" class="btn-dl-certificat" id="btnDownloadPDF">📥 Télécharger mon diplôme (PDF)</button>
+      <div class="dl-actions"><button type="button" class="btn-dl-certificat" id="btnDownloadPDF">📥 Télécharger mon diplôme (PDF)</button><button type="button" class="btn-dl-certificat" id="btnDownloadPNG">🖼️ En image (PNG)</button></div>
       
       ${correctionHTML}
     `;
 
     btn.style.display = "none";
 
-    document.getElementById("btnDownloadPDF").addEventListener("click", () => {
-      const element = document.getElementById("diplomePDF");
-      const opt = {
-        margin:       0.5,
-        filename:     `Diplome_Cybersecurite_${score}sur10.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'cm', format: 'a4', orientation: 'portrait' }
-      };
-      
-      // On s'assure que le contenu du certificat est bien pris en compte sans bug de rendu modale
-      html2pdf().set(opt).from(element).save();
-    });
+    const niveau = trophee.split(" ")[1];
+    const dateTxt = new Date().toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"});
+    const cvs = creerDiplome(nom, score, niveau, mention, dateTxt);
+    const base = "Diplome_Cybersecurite_" + score + "sur10";
+    document.getElementById("btnDownloadPDF").addEventListener("click", () => telechargerPDF(cvs, base + ".pdf"));
+    document.getElementById("btnDownloadPNG").addEventListener("click", () => telechargerImage(cvs, base + ".png"));
   });
 
   box.appendChild(btn);
   box.appendChild(res);
   container.appendChild(box);
+}
+
+function esc(t){
+  return t.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* Dessine le diplôme sur un canvas (A4 paysage), sans dépendre de la fenêtre */
+function creerDiplome(nom, score, niveau, mention, dateTxt){
+  const W = 1754, H = 1240, c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  const g = c.getContext("2d");
+  const serif = 'Georgia, "Times New Roman", serif';
+  g.fillStyle = "#fffaf0"; g.fillRect(0, 0, W, H);
+  g.strokeStyle = "#e9bf5b"; g.lineWidth = 14; g.strokeRect(50, 50, W - 100, H - 100);
+  g.strokeStyle = "#b3261e"; g.lineWidth = 4; g.strokeRect(85, 85, W - 170, H - 170);
+  g.textAlign = "center";
+
+  g.fillStyle = "#6b5a3a"; g.font = "32px " + serif;
+  g.fillText("CALENDRIER DE L’AVENT NUMÉRIQUE", W / 2, 185);
+  g.fillStyle = "#b3261e"; g.font = "bold 78px " + serif;
+  g.fillText("Diplôme de sécurité numérique", W / 2, 290);
+  g.fillStyle = "#2a2118"; g.font = "34px " + serif;
+  g.fillText("décerné à", W / 2, 370);
+
+  let taille = 84; const texteNom = nom || "Participant(e)";
+  do { g.font = "bold " + taille + "px " + serif; taille -= 4; } while (g.measureText(texteNom).width > W - 400 && taille > 30);
+  g.fillStyle = "#2a2118"; g.fillText(texteNom, W / 2, 470);
+  g.strokeStyle = "#e9bf5b"; g.lineWidth = 3;
+  g.beginPath(); g.moveTo(W / 2 - 420, 500); g.lineTo(W / 2 + 420, 500); g.stroke();
+
+  g.font = "34px " + serif; g.fillText("pour avoir réussi l’épreuve finale avec un score de", W / 2, 580);
+  g.fillStyle = "#b3261e"; g.font = "bold 76px " + serif; g.fillText(score + " / 10", W / 2, 670);
+
+  const couleurs = {Platine:["#c9d8e6","#6f8ba3"], Or:["#f3d36b","#b8860b"], Argent:["#dfe4e8","#7d868c"], Bronze:["#d89a63","#8a4f26"]};
+  const [c1, c2] = couleurs[niveau] || ["#d8f0dc", "#2e8b4a"];
+  const grad = g.createLinearGradient(W / 2 - 70, 740, W / 2 + 70, 880);
+  grad.addColorStop(0, c1); grad.addColorStop(1, c2);
+  g.beginPath(); g.arc(W / 2, 810, 70, 0, Math.PI * 2); g.fillStyle = grad; g.fill();
+  g.lineWidth = 8; g.strokeStyle = c2; g.stroke();
+  g.fillStyle = "#2a2118"; g.font = "bold 44px " + serif; g.fillText("Niveau " + niveau, W / 2, 940);
+  g.font = "36px " + serif; g.fillText(mention, W / 2, 1010);
+  g.fillStyle = "#6b5a3a"; g.font = "28px " + serif; g.fillText("Délivré le " + dateTxt, W / 2, 1110);
+  return c;
+}
+
+function lancerTelechargement(blob, nomFichier){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = nomFichier;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+function telechargerImage(canvas, nomFichier){
+  canvas.toBlob(b => lancerTelechargement(b, nomFichier), "image/png");
+}
+
+/* Fabrique un vrai PDF (1 page A4 paysage) contenant l'image du diplôme */
+function telechargerPDF(canvas, nomFichier){
+  const bin = atob(canvas.toDataURL("image/jpeg", 0.92).split(",")[1]);
+  const img = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) img[i] = bin.charCodeAt(i);
+  const enc = new TextEncoder(), morceaux = [], pos = [];
+  let n = 0;
+  const ajouter = x => { const b = typeof x === "string" ? enc.encode(x) : x; morceaux.push(b); n += b.length; };
+  ajouter("%PDF-1.4\n");
+  pos[1] = n; ajouter("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+  pos[2] = n; ajouter("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+  pos[3] = n; ajouter("3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n");
+  pos[4] = n; ajouter("4 0 obj\n<< /Type /XObject /Subtype /Image /Width " + canvas.width + " /Height " + canvas.height + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + img.length + " >>\nstream\n");
+  ajouter(img); ajouter("\nendstream\nendobj\n");
+  const flux = "q 842 0 0 595 0 0 cm /Im0 Do Q";
+  pos[5] = n; ajouter("5 0 obj\n<< /Length " + flux.length + " >>\nstream\n" + flux + "\nendstream\nendobj\n");
+  const xref = n;
+  let table = "xref\n0 6\n0000000000 65535 f \n";
+  for (let i = 1; i <= 5; i++) table += String(pos[i]).padStart(10, "0") + " 00000 n \n";
+  ajouter(table + "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF");
+  lancerTelechargement(new Blob(morceaux, {type: "application/pdf"}), nomFichier);
 }
 
 function fermer(){
