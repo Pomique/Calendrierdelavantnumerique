@@ -250,10 +250,10 @@ const CATS = {
 
 const DATA = [
  {c:"attaque",t:"Un mot de passe long et unique",x:"Une phrase de passe de 12 caractères ou plus est bien plus solide qu’un mot court avec un chiffre. Si tu réutilises le même mot de passe, un seul site piraté suffit à ouvrir tous tes comptes.",r:"Un mot de passe différent par compte, rangé dans un gestionnaire de mots de passe."},
- {c:"harcelement",t:"Reconnaître le cyberharcèlement",x:"Moqueries répétées, rumeurs, photos humiliantes, messages d’insultes, faux profils : quand les attaques se répètent en ligne, c’est du cyberharcèlement. Ce n’est jamais de ta faute, et tu n’as pas à l’endurer seul.",r:"Parles-en vite à un adulte ou à un ami de confiance."},
+ {c:"harcelement",t:"Reconnaître le cyberharcèlement",x:"Moqueries répétées, rumeurs, photos humiliantes, messages d’insultes, faux profils : quand les attaques se répètent en ligne, c’est du cyberharcèlement. Ce n’est jamais de ta faute, et tu n’as pas à l’endurer seul.",r:"Parles-en vite à un adulte, à un ami de confiance, ou appelle directement le 3018 (gratuit et anonyme)."},
  {
    c:"quiz", type:"quiz", t:"Mini-Quiz : Mots de passe & 2FA",
-   intro:"Teste tes réflexes sur la sécurité de base en 3 questions !",
+   intro:"Pourquoi les hackers aiment-ils le froid ? Parce qu'ils adorent pirater les 'gibsons' ! Trêve de plaisanterie, teste tes réflexes sur la sécurité de base en 3 questions :",
    questions:[
      {q:"1. Quelle est la meilleure option pour un mot de passe ?", options:["Un mot de 6 lettres avec ton prénom","Une phrase secrète longue et unique avec symboles","Le même mot de passe partout pour ne pas l'oublier"], correct:1},
      {q:"2. À quoi sert la double authentification (2FA) ?", options:["À doubler la vitesse d'Internet","À ajouter une validation par code en plus du mot de passe","À supprimer les pubs"], correct:1},
@@ -273,8 +273,8 @@ const DATA = [
  },
  {
    c:"video", type:"video", t:"Comprendre le Phishing (Hameçonnage)",
-   intro:"Découvre la ressource officielle pour apprendre à déjouer les pièges des arnaques par SMS ou emails.",
-   lien:"https://www.cybermalveillance.gouv.fr/tous-nos-contenus/fiches-reflexes/hameconnage-phishing",
+   intro:"Découvre la vidéo pour apprendre à déjouer les pièges des arnaques par SMS ou emails.",
+   lien:"https://www.youtube.com/watch?v=CHANGER_ICI_PAR_TON_LIEN",
    desc:"Analyse toujours l'adresse de l'expéditeur et passe ta souris sur les liens sans cliquer avant d'entrer la moindre information personnelle."
  },
  {c:"harcelement",t:"Garde les preuves",x:"Fais des captures d’écran de chaque message, commentaire ou publication. Note aussi le pseudo, l’adresse (URL), la date et l’heure. Ne supprime rien, même si c’est pénible à relire.",r:"Sans preuves, il est beaucoup plus difficile de faire retirer les contenus ou de porter plainte."},
@@ -533,7 +533,7 @@ function renderVideo(it, container){
     btn.style.display = "inline-block";
     btn.style.marginTop = "1rem";
     btn.style.textDecoration = "none";
-    btn.textContent = "▶ Accéder à la ressource officielle";
+    btn.textContent = "▶ Accéder à la vidéo YouTube";
     container.appendChild(btn);
   }
 
@@ -877,8 +877,7 @@ fenetre.addEventListener("cancel", e => { e.preventDefault(); fermer(); });
 (function(){
   const pan = document.getElementById("panneau-test");
   document.addEventListener("keydown", e => {
-    if (e.altKey && e.shiftKey && e.code === "KeyT") { e.preventDefault(); pan.hidden = !pan.hidden; if (!pan.hidden) document.getElementById("btn-test").focus(); }
-    else if (e.key === "Escape" && !pan.hidden && !fenetre.open) pan.hidden = true;
+    e.altKey && e.shiftKey && e.code === "KeyT" && (e.preventDefault(), pan.hidden = !pan.hidden);
   });
   let clics = 0, t;
   document.querySelector("header h1").addEventListener("click", () => {
