@@ -161,6 +161,28 @@ dialog[open]{animation:ouvre .35s cubic-bezier(.2,.9,.3,1.2)}
 .dl-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem}
 .lien-video{font-size:.9rem;color:#555}
 .lien-video a{color:var(--rouge);font-weight:600}
+.progress{width:min(360px,80%);height:10px;border-radius:99px;background:rgba(251,243,223,.12);margin:1rem auto .3rem;overflow:hidden}
+#barre{height:100%;width:0;background:linear-gradient(90deg,var(--or),#f6d77c);border-radius:99px;transition:width .5s}
+#prog-txt{font-size:.85rem;color:var(--gris);margin-top:.2rem}
+.pastille.jeu{background:#0f766e}
+#panneau-test{position:fixed;left:1rem;bottom:1rem;z-index:20;background:var(--creme);color:var(--encre);border:2px solid var(--or);border-radius:12px;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.5rem;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:270px}
+#panneau-test[hidden]{display:none}
+#panneau-test button{font:inherit;cursor:pointer;padding:.5rem .8rem;border-radius:8px;border:2px solid var(--sapin2);background:#fff;color:var(--encre)}
+#panneau-test button[aria-pressed="true"]{background:var(--or)}
+#panneau-test small{color:#6b5a3a;line-height:1.4}
+.vf-btns{display:flex;gap:.5rem}
+.vf-btn{font:inherit;cursor:pointer;padding:.5rem 1.2rem;border-radius:8px;border:2px solid var(--sapin2);background:#fff;color:var(--encre);text-align:left}
+.vf-btn:hover:not(:disabled){border-color:var(--rouge)}
+.vf-btn.bon,.seg.bon{border-color:#2e8b4a;background:#d8f0dc}
+.vf-btn.mauvais,.seg.mauvais{border-color:var(--rouge);background:#fadbd8}
+.q-item p.vf-retour{font-weight:400;margin:.6rem 0 0;font-size:.95rem;line-height:1.5}
+.sms{background:#e8f0fe;border-radius:16px;padding:1rem;display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.5rem}
+.seg{font:inherit;cursor:pointer;border:2px dashed #94a3b8;background:#fff;border-radius:8px;padding:.4rem .6rem;color:var(--encre);text-align:left;line-height:1.4}
+.seg.choisi{border-style:solid;border-color:var(--rouge);background:#fdecea}
+.sms.fini .seg{cursor:default}
+.scenario .sc-txt{font-size:1.05rem;line-height:1.6;margin-bottom:.9rem}
+.scenario .q-options{display:grid;gap:.6rem}
+.scenario .quiz-resultat{margin-bottom:.5rem}
 .fermer{
   position:absolute;top:.7rem;right:.8rem;width:2.6rem;height:2.6rem;border-radius:50%;
   border:2px solid var(--rouge);background:var(--creme);color:var(--rouge);font-size:1.5rem;cursor:pointer;line-height:1;
@@ -190,11 +212,9 @@ footer a{color:var(--or)}
   <h1 class="serif">Calendrier de l’Avent numérique</h1>
   <p>24 jours pour te protéger, tester tes connaissances et maîtriser ta sécurité en ligne. Du 1<sup>er</sup> au 24 décembre.</p>
   <span id="statut" role="status"></span>
-  <div id="outils-test">
-    <button type="button" id="btn-test" aria-pressed="false">Activer le mode test</button>
-    <button type="button" id="btn-reset">Remettre les cases à zéro</button>
-  </div>
-</header>
+  <div class="progress" aria-hidden="true"><div id="barre"></div></div>
+  <p id="prog-txt"></p>
+  </header>
 
 <main>
   <div class="grille" id="grille"></div>
@@ -202,6 +222,8 @@ footer a{color:var(--or)}
 
 <footer>
   <p>Besoin d’aide ? <b>3018</b> : cyberharcèlement (gratuit, anonyme). <b>17Cyber</b> et <a href="https://www.cybermalveillance.gouv.fr" target="_blank" rel="noopener">cybermalveillance.gouv.fr</a> : piratage et arnaques.</p>
+  <p style="margin-top:.8rem">Sources : <a href="https://www.cybermalveillance.gouv.fr" target="_blank" rel="noopener">cybermalveillance.gouv.fr</a>, <a href="https://3018.fr" target="_blank" rel="noopener">3018.fr</a>, <a href="https://www.internet-signalement.gouv.fr" target="_blank" rel="noopener">internet-signalement.gouv.fr</a>, <a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>, <a href="https://eduscol.education.fr" target="_blank" rel="noopener">Éduscol</a>.</p>
+  <p style="margin-top:.5rem">Ce site ne collecte aucune donnée personnelle : tes cases ouvertes, ton score et ton prénom restent dans ton navigateur. (La vidéo du jour 6 est fournie par Dailymotion.)</p>
 </footer>
 
 <dialog id="fenetre" aria-labelledby="f-titre">
@@ -215,13 +237,22 @@ footer a{color:var(--or)}
 </dialog>
 <div id="toast" role="status" aria-live="polite"></div>
 
+<div id="panneau-test" role="dialog" aria-label="Outils de test" hidden>
+  <b>Outils de test</b>
+  <button type="button" id="btn-test" aria-pressed="false">Activer le mode test</button>
+  <button type="button" id="btn-reset">Remettre les cases à zéro</button>
+  <small>Raccourci : Alt + Maj + T. Sur téléphone : touche 5 fois le titre.</small>
+  <button type="button" id="fermer-test">Fermer</button>
+</div>
+
 <script>
 const CATS = {
   attaque:{label:"Cyberattaque"},
   harcelement:{label:"Cyberharcèlement"},
   synthese:{label:"Pour finir"},
   quiz:{label:"Mini-Quiz"},
-  video:{label:"Capsule Vidéo"}
+  video:{label:"Capsule Vidéo"},
+  jeu:{label:"Mini-jeu"}
 };
 
 const DATA = [
@@ -237,7 +268,16 @@ const DATA = [
    ]
  },
  {c:"harcelement",t:"Ne réponds pas aux agresseurs",x:"Répondre à chaud, c’est donner à l’agresseur ce qu’il cherche et risquer d’aggraver la situation. Respire, ne réponds pas et passe aux étapes suivantes : preuves, blocage, signalement.",r:"Ne réponds pas, ne te venge pas : protège-toi d’abord."},
- {c:"attaque",t:"La double authentification (2FA)",x:"Avec la 2FA, un mot de passe volé ne suffit plus : il faut aussi un code ou une validation sur ton téléphone. Active-la en priorité sur ta messagerie, tes réseaux sociaux et ta banque.",r:"Préfère une application d’authentification aux codes par SMS quand c’est possible."},
+ {c:"jeu", type:"vraifaux", t:"Vrai ou faux : les idées reçues",
+   intro:"Ces phrases, tu les as sûrement déjà entendues. Vraies ou fausses ?",
+   items:[
+     {q:"« Mon compte n’intéresse personne, personne ne va me pirater. »", v:false, e:"Les pirates attaquent en masse et de façon automatique. Un compte piraté sert à envoyer des arnaques à tes contacts ou à revendre tes données."},
+     {q:"« Avec la navigation privée, je suis invisible sur Internet. »", v:false, e:"Elle n’efface que l’historique sur ton appareil. Les sites visités et ton fournisseur d’accès voient toujours ta connexion."},
+     {q:"« Un iPhone ou un Mac ne peut pas être piraté. »", v:false, e:"Aucun appareil n’est invulnérable. La plupart des arnaques visent l’humain (phishing, faux appels), pas la machine."},
+     {q:"« Avec la double authentification, un mot de passe volé ne suffit plus aux pirates. »", v:true, e:"Il leur faut aussi ton code ou ta validation. Active-la en priorité sur ta messagerie, tes réseaux sociaux et ta banque."},
+     {q:"« Si quelqu’un menace de diffuser mes photos, je dois payer pour que ça s’arrête. »", v:false, e:"Payer n’arrête presque jamais le chantage. Garde les preuves, ne paie pas et contacte le 3018 ou la police."}
+   ]
+ },
  {
    c:"video", type:"video", t:"Comprendre le Phishing (Hameçonnage)",
    intro:"Découvre en vidéo comment déjouer les pièges des arnaques par SMS ou emails grâce aux capsules de sensibilisation.",
@@ -247,7 +287,17 @@ const DATA = [
    desc:"Analyse toujours l'adresse de l'expéditeur et passe ta souris sur les liens sans cliquer avant d'entrer la moindre information personnelle."
  },
  {c:"harcelement",t:"Garde les preuves",x:"Fais des captures d’écran de chaque message, commentaire ou publication. Note aussi le pseudo, l’adresse (URL), la date et l’heure. Ne supprime rien, même si c’est pénible à relire.",r:"Sans preuves, il est beaucoup plus difficile de faire retirer les contenus ou de porter plainte."},
- {c:"attaque",t:"Les faux SMS (smishing)",x:"« Votre colis est bloqué », « amende à payer », « Compte Ameli à mettre à jour » : ces SMS mènent à de faux sites qui volent tes données bancaires. Les vraies administrations ne demandent pas de payer par un lien envoyé par SMS.",r:"Ne clique pas. Tu peux signaler le SMS en le transférant au 33700."},
+ {c:"jeu", type:"arnaque", t:"Repère l’arnaque !",
+   intro:"Tu reçois ce SMS. Touche les éléments qui te semblent suspects, puis clique sur « Vérifier ».",
+   segments:[
+     {t:"De : 07 58 •• •• ••", sus:true, why:"Un vrai transporteur n’écrit pas depuis un numéro de mobile inconnu."},
+     {t:"Votre colis est en attente de livraison.", sus:false, why:"Phrase banale : c’est ce qui rend le piège crédible."},
+     {t:"Des frais de 1,99 € sont à régler.", sus:true, why:"Une petite somme pour que tu donnes ta carte bancaire sans te méfier."},
+     {t:"Sans paiement sous 24 h, il sera retourné.", sus:true, why:"Fausse urgence : les escrocs veulent t’empêcher de réfléchir."},
+     {t:"https://colis-suivi-livraison.top/payer", sus:true, why:"Adresse inventée en .top, qui n’a rien d’un site de transporteur."},
+     {t:"Merci de votre confiance.", sus:false, why:"Formule de politesse neutre, sans danger en soi."}
+   ]
+ },
  {c:"harcelement",t:"Bloquer et signaler",x:"Chaque réseau social a un bouton « Signaler » et un bouton « Bloquer ». Utilise-les sur le compte et sur chaque contenu. Les plateformes doivent retirer les contenus illégaux qu’on leur signale.",r:"Bloquer n’est pas fuir : c’est reprendre le contrôle de ton espace."},
  {c:"attaque",t:"Les mises à jour, ce n’est pas du luxe",x:"La plupart des attaques utilisent des failles déjà connues et déjà corrigées. Si tu ne mets pas à jour ton téléphone, ton ordinateur et tes applis, tu laisses la porte ouverte.",r:"Active les mises à jour automatiques partout où c’est possible."},
  {c:"harcelement",t:"Le 3018 est là pour toi",x:"Le 3018 est le numéro national contre le cyberharcèlement et les violences numériques. C’est gratuit, anonyme et confidentiel. On peut aussi les joindre par chat et par application. Ils aident à faire supprimer les contenus.",r:"Victime ou témoin, tu peux appeler le 3018."},
@@ -264,7 +314,22 @@ const DATA = [
  {c:"harcelement",t:"Signaler sur PHAROS",x:"Pour un contenu illégal (menaces, injures racistes, appels à la haine, images violentes ou sexuelles), tu peux le signaler sur la plateforme officielle internet-signalement.gouv.fr.",r:"Tu peux signaler même si tu n’es pas la victime directe."},
  {c:"attaque",t:"Le Wi-Fi public, prudence",x:"Sur un Wi-Fi ouvert (gare, café, centre commercial), d’autres personnes peuvent espionner ou t’envoyer vers de faux sites. Évite d’y entrer tes mots de passe ou d’y faire des achats.",r:"Pour les opérations sensibles, utilise ta 4G/5G ou un VPN de confiance."},
  {c:"harcelement",t:"Sextorsion : on ne paie pas",x:"Un inconnu obtient des photos intimes puis menace de les diffuser si tu ne paies pas. Si ça t’arrive : ne paie pas, coupe le contact, garde les preuves, bloque et signale. Tu es la victime, pas le coupable.",r:"Contacte le 3018 ou la police."},
- {c:"attaque",t:"Le faux conseiller bancaire",x:"Quelqu’un t’appelle en se disant de ta banque, dit que ton compte est piraté et te demande un code reçu par SMS. C’est de l’ingénierie sociale : il joue sur la peur et l’urgence.",r:"Ne donne jamais un code par SMS. Raccroche et rappelle ta banque."},
+ {c:"jeu", type:"scenario", t:"Scénario : l’appel du « conseiller bancaire »",
+   intro:"Fais tes choix : chaque décision a une conséquence.",
+   noeuds:{
+     debut:{txt:"Ton téléphone sonne. « Bonjour, ici le service fraude de votre banque. Des paiements suspects viennent d’être détectés. Pour sécuriser votre compte, je vous envoie un code par SMS : lisez-le-moi. » Tu reçois bien un SMS avec un code.",
+       choix:[
+         {t:"Je lis le code, c’est pour sécuriser mon compte.", fin:{ok:false, txt:"Raté. Ce code validait une opération du fraudeur (paiement, ou ajout de ta carte sur son téléphone). Qu’il connaisse ton nom ne prouve rien. Ne donne jamais un code reçu par SMS."}},
+         {t:"Je raccroche et je rappelle ma banque avec le numéro officiel (au dos de la carte ou dans l’appli).", fin:{ok:true, txt:"Bien joué ! Tu coupes la communication et tu reprends la main. Si c’était une vraie alerte, ta banque te le confirmera."}},
+         {t:"Je lui demande son nom et son numéro d’agent.", suite:"insiste"}
+       ]},
+     insiste:{txt:"Il te donne un nom et un numéro d’agent d’une voix très sûre, puis se fait pressant : « Dépêchez-vous, sinon l’argent sera perdu dans quelques minutes ! »",
+       choix:[
+         {t:"Je lis le code vite fait, il a l’air sérieux.", fin:{ok:false, txt:"Il avait préparé de faux détails pour te mettre en confiance. L’urgence est justement le signe de l’arnaque."}},
+         {t:"Je raccroche : cette pression est un signal d’alerte, je rappelle ma banque.", fin:{ok:true, txt:"Exactement. Plus on te presse, plus il faut ralentir. Rappelle ta banque toi-même, avec le numéro officiel."}}
+       ]}
+   }
+ },
  {c:"harcelement",t:"Images intimes diffusées sans accord",x:"Partager une photo ou une vidéo intime sans accord est interdit par la loi. Si c’est toi, demande le retrait, garde les preuves et porte plainte. Si on te l’envoie, ne la partage pas.",r:"Ne transfère jamais ce type de contenu."},
  {c:"attaque",t:"Les QR codes piégés",x:"Un QR code collé sur un parking ou un menu peut mener vers un faux site de paiement. Un autocollant par-dessus un vrai code est une technique courante de piège (quishing).",r:"Vérifie l'URL avant de payer ou de t'identifier."},
  {c:"harcelement",t:"Sécuriser tes comptes",x:"Passe tes profils en réseau social en privé, choisis qui peut te contacter et limite les infos visibles (école, adresse). Moins l’agresseur a d’éléments sur toi, moins il peut agir.",r:"Prends 10 minutes pour vérifier tes paramètres de confidentialité."},
@@ -284,7 +349,15 @@ const DATA = [
      {q:"7. Est-il utile de faire des captures d'écran en cas de harcèlement en ligne ?", options:["Non, ça ne sert à rien","Oui, ce sont des preuves indispensables pour agir ou porter plainte"], correct:1, explain:"Les captures d'écran horodatées permettent de conserver une preuve juridique même si l'agresseur efface ses messages."},
      {q:"8. Un faux conseiller bancaire t'appelle et demande un code reçu par SMS. Tu le donnes ?", options:["Oui car il travaille à la banque","Non, jamais de code par SMS ou téléphone"], correct:1, explain:"Aucune banque ni service sérieux ne te demandera jamais un code confidentiel reçu par SMS."},
      {q:"9. Rire ou repartager une publication humiliante d'un camarade, c'est :", options:["Participer au cyberharcèlement","Juste de l'humour sans conséquence"], correct:0, explain:"Amplifier un contenu humiliant (like, partage, rire) contribue directement à la souffrance de la victime."},
-     {q:"10. Quel site officiel français aide les victimes de piratage informatique ?", options:["cybermalveillance.gouv.fr","google.fr","facebook.com"], correct:0, explain:"Cybermalveillance.gouv.fr est la plateforme gouvernementale pour s'informer, être assisté et diagnostiquer un piratage."}
+     {q:"10. Quel site officiel français aide les victimes de piratage informatique ?", options:["cybermalveillance.gouv.fr","google.fr","facebook.com"], correct:0, explain:"Cybermalveillance.gouv.fr est la plateforme gouvernementale pour s'informer, être assisté et diagnostiquer un piratage."},
+     {q:"Qu’est-ce que le phishing (hameçonnage) ?", options:["Une technique de pêche en ligne","Une arnaque où l’on se fait passer pour un organisme de confiance afin de voler des données","Un virus qui efface les photos"], correct:1, explain:"Les escrocs imitent une banque, les impôts ou un livreur pour te faire donner tes identifiants ou ta carte."},
+     {q:"Un SMS te demande 1,99 € de frais de livraison via un lien. Que fais-tu ?", options:["Je paie, c’est peu","Je ne clique pas et je le signale (33700)","Je réponds pour demander des détails"], correct:1, explain:"C’est une arnaque très répandue : le faux site récupère les données de ta carte."},
+     {q:"Qu’est-ce qui rend un mot de passe plus solide ?", options:["Sa longueur","Y mettre sa date de naissance","Le noter sur un post-it"], correct:0, explain:"Plus il est long (12 caractères ou plus) et unique, plus il est difficile à deviner."},
+     {q:"La double authentification protège ton compte même si ton mot de passe est volé.", options:["Vrai","Faux"], correct:0, explain:"Le pirate a aussi besoin du second élément (code ou validation sur ton téléphone)."},
+     {q:"Un camarade est harcelé en ligne. Que peux-tu faire ?", options:["Liker les moqueries pour ne pas être visé","Le soutenir en privé et signaler les contenus","Partager pour que tout le monde voie"], correct:1, explain:"Un message de soutien et un signalement aident vraiment. Ne relaie jamais les contenus humiliants."},
+     {q:"Pourquoi faut-il mettre à jour ses appareils ?", options:["Pour corriger des failles de sécurité","Pour changer l’apparence de l’écran","Pour consommer plus de batterie"], correct:0, explain:"Beaucoup d’attaques exploitent des failles déjà corrigées dans les mises à jour."},
+     {q:"Que dit la loi sur la diffusion d’images intimes d’une personne sans son accord ?", options:["C’est toléré entre amis","C’est interdit et puni par la loi","C’est autorisé si on floute le visage"], correct:1, explain:"Même partagé « en privé », c’est un délit. Il faut signaler et garder les preuves."},
+     {q:"Pour une opération bancaire hors de chez toi, que vaut-il mieux utiliser ?", options:["Ta 4G/5G ou un VPN de confiance","Le Wi-Fi gratuit du café, sans réfléchir","N’importe quel réseau en désactivant l’antivirus"], correct:0, explain:"Sur un Wi-Fi public, d’autres personnes peuvent espionner ce que tu envoies."}
    ]
  }
 ];
@@ -295,6 +368,7 @@ const toast = document.getElementById("toast");
 const statut = document.getElementById("statut");
 let MODE_TEST = new URLSearchParams(location.search).has("test");
 const CLE = "avent-numerique-ouvertes";
+const CLE_SCORE = "avent-numerique-score";
 
 let ouvertes = [];
 try { ouvertes = JSON.parse(localStorage.getItem(CLE)) || []; } catch (e) { ouvertes = []; }
@@ -307,6 +381,9 @@ function jourMax(){
 }
 
 function afficherStatut(){
+  const barre = document.getElementById("barre");
+  if (barre) barre.style.width = Math.round(ouvertes.length / 24 * 100) + "%";
+  document.getElementById("prog-txt").textContent = ouvertes.length + " / 24 cases ouvertes";
   const max = jourMax(), d = new Date();
   if (MODE_TEST) statut.textContent = "Mode test : toutes les cases sont ouvertes";
   else if (max === 0) {
@@ -366,14 +443,22 @@ function ouvrir(jour){
     renderMiniQuiz(it, contenu);
   } else if (it.type === "video") {
     renderVideo(it, contenu);
+  } else if (it.type === "vraifaux") {
+    renderVraiFaux(it, contenu);
+  } else if (it.type === "arnaque") {
+    renderArnaque(it, contenu);
+  } else if (it.type === "scenario") {
+    renderScenario(it, contenu);
   } else if (it.type === "final") {
     renderFinalQuiz(it, contenu);
   } else {
     renderTip(it, contenu);
   }
 
-  if (!ouvertes.includes(jour)) { ouvertes.push(jour); sauver(); }
+  const nouveau = !ouvertes.includes(jour);
+  if (nouveau) { ouvertes.push(jour); sauver(); }
   fenetre.showModal();
+  if (nouveau) confettis(36);
   fenetre.querySelector(".carte").scrollTop = 0;
 }
 
@@ -470,83 +555,182 @@ function renderVideo(it, container){
   }
 }
 
-function renderFinalQuiz(it, container){
-  const intro = document.createElement("p");
-  intro.className = "texte";
-  intro.textContent = it.intro;
-  container.appendChild(intro);
+function el(tag, cls, txt){
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt) n.textContent = txt;
+  return n;
+}
 
-  const lab = document.createElement("label");
-  lab.className = "prenom";
-  lab.textContent = "Ton prénom (il sera écrit sur ton diplôme)";
+function melanger(a){
+  const t = a.slice();
+  for (let i = t.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [t[i], t[j]] = [t[j], t[i]]; }
+  return t;
+}
+
+function confettis(n){
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cible = fenetre.open ? fenetre : document.body;
+  const couleurs = ["#e9bf5b", "#b3261e", "#2e8b4a", "#fbf3df", "#38bdf8"];
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement("i");
+    p.style.cssText = "position:fixed;top:30%;left:50%;width:9px;height:14px;border-radius:2px;pointer-events:none;z-index:50;background:" + couleurs[i % couleurs.length];
+    cible.appendChild(p);
+    const dx = (Math.random() - .5) * innerWidth * .8, dy = innerHeight * (.3 + Math.random() * .6), rot = Math.random() * 720 - 360;
+    p.animate([{transform: "translate(0,0) rotate(0)", opacity: 1}, {transform: "translate(" + dx + "px," + dy + "px) rotate(" + rot + "deg)", opacity: 0}],
+      {duration: 1400 + Math.random() * 900, easing: "cubic-bezier(.2,.7,.3,1)"}).onfinish = () => p.remove();
+  }
+}
+
+function renderVraiFaux(it, container){
+  container.appendChild(el("p", "texte", it.intro));
+  let bons = 0, faits = 0;
+  const bilan = el("div", "quiz-resultat succes");
+  it.items.forEach(item => {
+    const bloc = el("div", "q-item"), rangee = el("div", "vf-btns"), retour = el("p", "vf-retour");
+    bloc.appendChild(el("p", "", item.q));
+    [true, false].forEach(val => {
+      const b = el("button", "vf-btn", val ? "Vrai" : "Faux");
+      b.type = "button";
+      b.addEventListener("click", () => {
+        rangee.querySelectorAll("button").forEach(x => x.disabled = true);
+        const ok = val === item.v;
+        b.classList.add(ok ? "bon" : "mauvais");
+        if (ok) bons++;
+        faits++;
+        retour.textContent = (ok ? "✅ Bien vu ! " : "❌ Pas tout à fait. ") + "C’est " + (item.v ? "vrai" : "faux") + ". " + item.e;
+        if (faits === it.items.length) { bilan.style.display = "block"; bilan.textContent = "Score : " + bons + " / " + it.items.length; }
+      });
+      rangee.appendChild(b);
+    });
+    bloc.append(rangee, retour);
+    container.appendChild(bloc);
+  });
+  container.appendChild(bilan);
+}
+
+function renderArnaque(it, container){
+  container.appendChild(el("p", "texte", it.intro));
+  const sms = el("div", "sms");
+  const btns = it.segments.map(seg => {
+    const b = el("button", "seg", seg.t);
+    b.type = "button"; b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => {
+      if (sms.classList.contains("fini")) return;
+      const on = b.getAttribute("aria-pressed") === "true";
+      b.setAttribute("aria-pressed", String(!on)); b.classList.toggle("choisi", !on);
+    });
+    sms.appendChild(b);
+    return b;
+  });
+  const verif = el("button", "btn-valider-quiz", "Vérifier mes réponses");
+  verif.type = "button";
+  const res = el("div", "quiz-resultat succes");
+  verif.addEventListener("click", () => {
+    sms.classList.add("fini");
+    let bons = 0;
+    res.innerHTML = "";
+    it.segments.forEach((seg, i) => {
+      const ok = (btns[i].getAttribute("aria-pressed") === "true") === seg.sus;
+      if (ok) bons++;
+      btns[i].classList.add(ok ? "bon" : "mauvais"); btns[i].disabled = true;
+      res.appendChild(el("p", "", (ok ? "✅ " : "❌ ") + "« " + seg.t + " » : " + (seg.sus ? "suspect. " : "pas suspect. ") + seg.why));
+    });
+    const sc = el("p", "", "Score : " + bons + " / " + it.segments.length);
+    sc.style.fontWeight = "700";
+    res.insertBefore(sc, res.firstChild);
+    res.style.display = "block"; verif.style.display = "none";
+    if (bons === it.segments.length) confettis(50);
+  });
+  container.append(sms, verif, res);
+}
+
+function renderScenario(it, container){
+  container.appendChild(el("p", "texte", it.intro));
+  const zone = el("div", "scenario");
+  container.appendChild(zone);
+  function aller(id){
+    zone.innerHTML = "";
+    const n = it.noeuds[id], liste = el("div", "q-options");
+    zone.appendChild(el("p", "sc-txt", n.txt));
+    n.choix.forEach(c => {
+      const b = el("button", "vf-btn", c.t);
+      b.type = "button";
+      b.addEventListener("click", () => { if (c.suite) aller(c.suite); else fin(c.fin); });
+      liste.appendChild(b);
+    });
+    zone.appendChild(liste);
+  }
+  function fin(f){
+    zone.innerHTML = "";
+    const r = el("div", "quiz-resultat " + (f.ok ? "succes" : "echec"), (f.ok ? "✅ " : "❌ ") + f.txt);
+    r.style.display = "block";
+    const again = el("button", "btn-valider-quiz", "Rejouer le scénario");
+    again.type = "button";
+    again.addEventListener("click", () => aller("debut"));
+    zone.append(r, again);
+    if (f.ok) confettis(40);
+  }
+  aller("debut");
+}
+
+function renderFinalQuiz(it, container){
+  const qs = melanger(it.questions).slice(0, 10).map(q => {
+    const ordre = melanger(q.options.map((_, i) => i));
+    return {q: q.q.replace(/^\d+\.\s*/, ""), options: ordre.map(i => q.options[i]), correct: ordre.indexOf(q.correct), explain: q.explain};
+  });
+  let meilleur = 0;
+  try { meilleur = +localStorage.getItem(CLE_SCORE) || 0; } catch (e) {}
+  container.appendChild(el("p", "texte", it.intro + (meilleur ? " Ton meilleur score : " + meilleur + " / 10." : "")));
+
+  const lab = el("label", "prenom", "Ton prénom (il sera écrit sur ton diplôme)");
   const inpNom = document.createElement("input");
   inpNom.type = "text"; inpNom.id = "prenomDiplome"; inpNom.maxLength = 40; inpNom.autocomplete = "given-name";
   lab.appendChild(inpNom);
   container.appendChild(lab);
 
-  const box = document.createElement("div");
-  box.className = "quiz-box";
-
-  it.questions.forEach((qObj, idx) => {
-    const qDiv = document.createElement("div");
-    qDiv.className = "q-item";
-    qDiv.innerHTML = `<p>${qObj.q}</p>`;
-    const opts = document.createElement("div");
-    opts.className = "q-options";
+  const box = el("div", "quiz-box");
+  qs.forEach((qObj, idx) => {
+    const qDiv = el("div", "q-item");
+    qDiv.innerHTML = `<p>${idx + 1}. ${esc(qObj.q)}</p>`;
+    const opts = el("div", "q-options");
     qObj.options.forEach((optText, oIdx) => {
-      opts.innerHTML += `<label><input type="radio" name="fq${idx}" value="${oIdx}"> ${optText}</label>`;
+      opts.innerHTML += `<label><input type="radio" name="fq${idx}" value="${oIdx}"> ${esc(optText)}</label>`;
     });
     qDiv.appendChild(opts);
     box.appendChild(qDiv);
   });
 
-  const btn = document.createElement("button");
+  const btn = el("button", "btn-valider-quiz", "Valider l'examen final");
   btn.type = "button";
-  btn.className = "btn-valider-quiz";
-  btn.textContent = "Valider l'examen final";
-
-  const res = document.createElement("div");
-  res.className = "quiz-resultat";
+  const res = el("div", "quiz-resultat");
 
   btn.addEventListener("click", () => {
+    const nom = (inpNom.value || "").trim();
     let score = 0;
-    const nom = (document.getElementById("prenomDiplome").value || "").trim();
     let correctionHTML = '<div class="correction-container"><h3>Correction détaillée :</h3>';
-
-    it.questions.forEach((qObj, idx) => {
+    qs.forEach((qObj, idx) => {
       const selected = box.querySelector(`input[name="fq${idx}"]:checked`);
       const userAnsIdx = selected ? parseInt(selected.value) : -1;
       const isCorrect = userAnsIdx === qObj.correct;
-
       if (isCorrect) score++;
-
       const userAnsText = userAnsIdx !== -1 ? qObj.options[userAnsIdx] : "Aucune réponse donnée";
-      const correctAnsText = qObj.options[qObj.correct];
-
       correctionHTML += `
         <div class="corr-item ${isCorrect ? 'correct' : 'incorrect'}">
-          <div class="corr-q">${qObj.q}</div>
-          <div class="corr-ans">${isCorrect ? '✅' : '❌'} <b>Votre réponse :</b> ${userAnsText}</div>
-          ${!isCorrect ? `<div class="corr-ans"><b>Bonne réponse :</b> ${correctAnsText}</div>` : ''}
-          <div class="corr-explain">👉 ${qObj.explain}</div>
-        </div>
-      `;
+          <div class="corr-q">${idx + 1}. ${esc(qObj.q)}</div>
+          <div class="corr-ans">${isCorrect ? '✅' : '❌'} <b>Votre réponse :</b> ${esc(userAnsText)}</div>
+          ${!isCorrect ? `<div class="corr-ans"><b>Bonne réponse :</b> ${esc(qObj.options[qObj.correct])}</div>` : ''}
+          <div class="corr-explain">👉 ${esc(qObj.explain)}</div>
+        </div>`;
     });
-
     correctionHTML += '</div>';
 
     let trophee = "🥉 Bronze";
     let mention = "Mention Passable - Continue à développer tes réflexes numériques !";
-    if (score === 10) {
-      trophee = "🏆 Platine";
-      mention = "Mention Très Bien - Expert(e) absolu(e) en Cybersécurité !";
-    } else if (score >= 8) {
-      trophee = "🥇 Or";
-      mention = "Mention Bien - Maîtrise solide des bonnes pratiques !";
-    } else if (score >= 6) {
-      trophee = "🥈 Argent";
-      mention = "Mention Assez Bien - De bons réflexes acquis !";
-    }
+    if (score === 10) { trophee = "🏆 Platine"; mention = "Mention Très Bien - Expert(e) absolu(e) en Cybersécurité !"; }
+    else if (score >= 8) { trophee = "🥇 Or"; mention = "Mention Bien - Maîtrise solide des bonnes pratiques !"; }
+    else if (score >= 6) { trophee = "🥈 Argent"; mention = "Mention Assez Bien - De bons réflexes acquis !"; }
+    try { if (score > (+localStorage.getItem(CLE_SCORE) || 0)) localStorage.setItem(CLE_SCORE, score); } catch (e) {}
 
     res.style.display = "block";
     res.className = "quiz-resultat succes";
@@ -560,20 +744,27 @@ function renderFinalQuiz(it, container){
         <p style="font-weight:bold; color:var(--encre); margin-top:0.5rem;">${mention}</p>
         <p style="font-size:0.8rem; color:#777; margin-top:1.5rem;">Délivré le ${new Date().toLocaleDateString('fr-FR')} — Projet Open Source</p>
       </div>
-
-      <div class="dl-actions"><button type="button" class="btn-dl-certificat" id="btnDownloadPDF">📥 Télécharger mon diplôme (PDF)</button><button type="button" class="btn-dl-certificat" id="btnDownloadPNG">🖼️ En image (PNG)</button></div>
-      
-      ${correctionHTML}
-    `;
+      <div class="dl-actions">
+        <button type="button" class="btn-dl-certificat" id="btnDownloadPDF">📥 Télécharger mon diplôme (PDF)</button>
+        <button type="button" class="btn-dl-certificat" id="btnDownloadPNG">🖼️ En image (PNG)</button>
+        <button type="button" class="btn-dl-certificat" id="btnRefaire">🔁 Refaire un quiz</button>
+      </div>
+      ${correctionHTML}`;
 
     btn.style.display = "none";
-
     const niveau = trophee.split(" ")[1];
     const dateTxt = new Date().toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"});
     const cvs = creerDiplome(nom, score, niveau, mention, dateTxt);
     const base = "Diplome_Cybersecurite_" + score + "sur10";
     document.getElementById("btnDownloadPDF").addEventListener("click", () => telechargerPDF(cvs, base + ".pdf"));
     document.getElementById("btnDownloadPNG").addEventListener("click", () => telechargerImage(cvs, base + ".png"));
+    document.getElementById("btnRefaire").addEventListener("click", () => {
+      container.innerHTML = "";
+      renderFinalQuiz(it, container);
+      fenetre.querySelector(".carte").scrollTop = 0;
+    });
+    if (score >= 5) confettis(score === 10 ? 90 : 55);
+    res.scrollIntoView({behavior: "smooth", block: "start"});
   });
 
   box.appendChild(btn);
@@ -674,7 +865,7 @@ fenetre.addEventListener("cancel", e => { e.preventDefault(); fermer(); });
     bTest.textContent = MODE_TEST ? "Désactiver le mode test" : "Activer le mode test";
   }
   bTest.addEventListener("click", () => { MODE_TEST = !MODE_TEST; maj(); construire(); });
-  bReset.addEventListener("click", () => { ouvertes = []; sauver(); construire(); montrerToast("Toutes les cases sont refermées."); });
+  bReset.addEventListener("click", () => { ouvertes = []; sauver(); try { localStorage.removeItem(CLE_SCORE); } catch (e) {} construire(); montrerToast("Toutes les cases sont refermées."); });
   maj();
 })();
 
@@ -688,6 +879,20 @@ fenetre.addEventListener("cancel", e => { e.preventDefault(); fermer(); });
       "animation-delay:-" + Math.random() * 20 + "s;opacity:" + (0.3 + Math.random() * 0.5);
     n.appendChild(f);
   }
+})();
+
+(function(){
+  const pan = document.getElementById("panneau-test");
+  document.addEventListener("keydown", e => {
+    if (e.altKey && e.shiftKey && e.code === "KeyT") { e.preventDefault(); pan.hidden = !pan.hidden; if (!pan.hidden) document.getElementById("btn-test").focus(); }
+    else if (e.key === "Escape" && !pan.hidden && !fenetre.open) pan.hidden = true;
+  });
+  let clics = 0, t;
+  document.querySelector("header h1").addEventListener("click", () => {
+    clics++; clearTimeout(t); t = setTimeout(() => clics = 0, 1500);
+    if (clics >= 5) { clics = 0; pan.hidden = false; }
+  });
+  document.getElementById("fermer-test").addEventListener("click", () => { pan.hidden = true; });
 })();
 
 construire();
