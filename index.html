@@ -160,6 +160,14 @@ dialog[open]{animation:ouvre .35s cubic-bezier(.2,.9,.3,1.2)}
 #barre{height:100%;width:0;background:linear-gradient(90deg,var(--or),#f6d77c);border-radius:99px;transition:width .5s}
 #prog-txt{font-size:.85rem;color:var(--gris);margin-top:.2rem}
 .quiz-resultat .corr-item{color:var(--encre)}
+.mdp-box{margin-top:1.2rem;padding:1rem;border:2px dashed var(--or);border-radius:12px;background:rgba(0,0,0,.03)}
+.mdp-titre{font-weight:700;margin-bottom:.3rem;color:var(--encre)}
+.mdp-note{font-size:.88rem;color:#6b5a3a;margin-bottom:.6rem;line-height:1.5}
+.mdp-box input{width:100%;font:inherit;padding:.6rem .8rem;border-radius:8px;border:2px solid var(--sapin2);background:#fff;color:var(--encre)}
+.mdp-barre{height:10px;border-radius:99px;background:#e5e0d0;margin:.8rem 0 .4rem;overflow:hidden}
+.mdp-rempli{height:100%;width:0;border-radius:99px;transition:width .3s,background .3s}
+.mdp-verdict{font-weight:700;color:var(--encre)}
+.mdp-liste{list-style:none;margin-top:.4rem;font-size:.92rem;line-height:1.7;color:var(--encre)}
 .pastille.jeu{background:#0f766e} .pastille.ressource{background:#1d4ed8}
 #panneau-test{position:fixed;left:1rem;bottom:1rem;z-index:20;background:var(--creme);color:var(--encre);border:2px solid var(--or);border-radius:12px;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.5rem;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:270px}
 #panneau-test[hidden]{display:none}
@@ -253,7 +261,7 @@ const CATS = {
 };
 
 const DATA = [
- {c:"attaque",t:"Un mot de passe long et unique",x:"Une phrase de passe de 12 caractères ou plus est bien plus solide qu’un mot court avec un chiffre. Si tu réutilises le même mot de passe, un seul site piraté suffit à ouvrir tous tes comptes.",r:"Un mot de passe différent par compte, rangé dans un gestionnaire de mots de passe."},
+ {c:"attaque",outil:"mdp",t:"Un mot de passe long et unique",x:"Une phrase de passe de 12 caractères ou plus est bien plus solide qu’un mot court avec un chiffre. Si tu réutilises le même mot de passe, un seul site piraté suffit à ouvrir tous tes comptes.",r:"Un mot de passe différent par compte, rangé dans un gestionnaire de mots de passe."},
  {c:"harcelement",t:"Reconnaître le cyberharcèlement",x:"Moqueries répétées, rumeurs, photos humiliantes, messages d’insultes, faux profils : quand les attaques se répètent en ligne, c’est du cyberharcèlement. Ce n’est jamais de ta faute, et tu n’as pas à l’endurer seul.",r:"Parles-en vite à un adulte, à un ami de confiance, ou appelle directement le 3018 (gratuit et anonyme)."},
  {
    c:"quiz", type:"quiz", t:"Mini-Quiz : Mots de passe & 2FA",
@@ -337,8 +345,31 @@ const DATA = [
      {q:"Tu dois régler une amende. Quel site est officiel ?", options:["amendes.gouv.fr","amendes-gouv-paiement.com","paiement-amende.net"], vrai:0, e:"Les sites de l’État finissent par .gouv.fr. Un nom qui ressemble à « gouv » mais se termine par .com ou .net est un piège."}
    ]
  },
- {c:"harcelement",t:"Témoin : ne reste pas spectateur",x:"Liker, partager ou rire d’un contenu humiliant, c’est participer au harcèlement. Tu peux signaler le contenu et écrire en privé à la personne pour lui apporter ton soutien.",r:"Un seul message de soutien peut tout changer."},
- {c:"attaque",t:"Piraté ? Les bons réflexes",x:"Si tu penses qu’un compte a été piraté : change vite le mot de passe, active la 2FA, déconnecte les autres appareils et préviens tes contacts. Rends-toi sur cybermalveillance.gouv.fr.",r:"Agis rapidement pour limiter les dégâts."},
+ {c:"jeu", type:"scenario", t:"Scénario : le groupe de classe",
+   intro:"Tu es dans la conversation de ta classe. Fais tes choix : chaque décision a une conséquence.",
+   noeuds:{
+     debut:{txt:"Quelqu’un poste dans le groupe une photo gênante d’un camarade, retouchée pour se moquer de lui. Les messages moqueurs s’enchaînent et plusieurs personnes mettent des 😂. Que fais-tu ?",
+       choix:[
+         {t:"Je mets un 😂 comme les autres, c’est juste pour rigoler.", fin:{ok:false, txt:"Liker, rire ou partager, c’est participer au harcèlement : chaque réaction donne plus de portée à la moquerie et fait plus mal à la victime. Même sans l’avoir lancée, tu en fais partie."}},
+         {t:"Je ne dis rien et je passe mon chemin.", suite:"lendemain"},
+         {t:"Je signale la publication, je ne réagis pas dans le groupe et j’écris en privé au camarade pour le soutenir.", fin:{ok:true, txt:"Bien joué ! Signaler fait retirer le contenu, ne pas réagir ne nourrit pas la moquerie, et ton message de soutien compte énormément. Garde aussi une capture d’écran comme preuve, et parles-en à un adulte de confiance ou au 3018."}}
+       ]},
+     lendemain:{txt:"Le lendemain, la photo circule encore et ton camarade n’ose plus venir en cours. Tu te sens mal à l’aise. Que fais-tu maintenant ?",
+       choix:[
+         {t:"Toujours rien : ça va finir par passer.", fin:{ok:false, txt:"Le harcèlement s’arrête rarement tout seul. Rester spectateur laisse la victime isolée : un geste, même tardif, peut tout changer."}},
+         {t:"Je lui écris en privé, je signale la photo et j’en parle à un adulte de confiance.", fin:{ok:true, txt:"Exactement. Il n’est jamais trop tard pour agir : ton soutien et ton signalement peuvent mettre fin à la situation."}}
+       ]}
+   }
+ },
+ {c:"jeu", type:"vraisite", t:"Qui contacter ?",
+   intro:"Chaque problème a son bon contact. Associe chaque situation au bon service : c’est l’échauffement avant le grand quiz final !",
+   rounds:[
+     {q:"Tu veux signaler un SMS frauduleux reçu sur ton téléphone. Où le transférer ?", options:["Au 33700","Au 3018","À ta banque"], vrai:0, e:"Le 33700 est le service de signalement des SMS et appels frauduleux : transfère-lui le message sans cliquer sur le lien."},
+     {q:"Un camarade est victime de cyberharcèlement. Quel numéro gratuit et anonyme peut-il appeler ?", options:["Le 33700","Le 3018","cybermalveillance.gouv.fr"], vrai:1, e:"Le 3018 est gratuit, anonyme et confidentiel. Il aide aussi à faire supprimer les contenus."},
+     {q:"Tu tombes sur une vidéo qui contient des menaces et appelle à la haine. Où la signaler officiellement ?", options:["internet-signalement.gouv.fr (PHAROS)","Au 33700","cybermalveillance.gouv.fr"], vrai:0, e:"PHAROS est la plateforme de la police et de la gendarmerie pour signaler les contenus illégaux, même si tu n’es pas la victime."},
+     {q:"Ton compte est piraté et tu ne peux plus te connecter. Où trouver de l’aide pas à pas ?", options:["Au 33700","internet-signalement.gouv.fr","cybermalveillance.gouv.fr"], vrai:2, e:"Cybermalveillance.gouv.fr te guide. En attendant : change vite le mot de passe, active la 2FA, déconnecte les autres appareils et préviens tes contacts."}
+   ]
+ },
  {
    c:"synthese", type:"final", t:"Le Grand Quiz Final de Noël !",
    intro:"C’est l’épreuve finale ! Réponds aux 10 questions pour évaluer ton niveau en cybersécurité et cyberharcèlement, consulter tes erreurs, décrocher ton trophée et télécharger ton diplôme.",
@@ -477,6 +508,7 @@ function renderTip(it, container){
   r.className = "retenir";
   r.innerHTML = "<b>À retenir :</b> " + it.r;
   container.appendChild(r);
+  if (it.outil === "mdp") renderTesteurMdp(container);
 }
 
 function renderMiniQuiz(it, container){
@@ -712,6 +744,56 @@ function renderVraiSite(it, container){
     container.appendChild(bloc);
   });
   container.appendChild(bilan);
+}
+
+function evaluerMdp(v){
+  const bas = v.toLowerCase();
+  const classes = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^A-Za-z0-9]/].filter(r => r.test(v)).length;
+  const commun = ["azerty","qwerty","password","motdepasse","123456","111111","000000","admin","bonjour","soleil","football","iloveyou","abc123"].some(c => bas.includes(c))
+    || /(012|123|234|345|456|567|678|789|abc|bcd|cde)/.test(bas) || /(19|20)\d\d/.test(bas);
+  const repete = /(.)\1{2,}/.test(v);
+  const criteres = [
+    {ok: v.length >= 12, t: "12 caractères ou plus"},
+    {ok: classes >= 3 || v.length >= 16, t: "un bon mélange (majuscules, minuscules, chiffres, symboles) ou une longue phrase"},
+    {ok: !commun, t: "pas de mot ou de suite très courants (azerty, 123, une année…)"},
+    {ok: !repete, t: "pas de caractère répété trois fois de suite"}
+  ];
+  let niveau = criteres.filter(c => c.ok).length;
+  if (v.length < 8) niveau = Math.min(niveau, 1);
+  if (commun) niveau = Math.min(niveau, 2);
+  if (repete) niveau = Math.min(niveau, 2);
+  if (new Set(v).size <= 4) niveau = Math.min(niveau, 1);
+  if (niveau === 4 && v.length >= 16) niveau = 5;
+  return {niveau, criteres};
+}
+
+function renderTesteurMdp(container){
+  const box = el("div", "mdp-box");
+  box.appendChild(el("p", "mdp-titre", "🔐 Teste un mot de passe d’exemple"));
+  box.appendChild(el("p", "mdp-note", "N’écris jamais ton vrai mot de passe. Le test se fait dans ton navigateur : rien n’est envoyé ni enregistré. C’est une estimation simple, pas une garantie."));
+  const inp = document.createElement("input");
+  inp.type = "text"; inp.autocomplete = "off"; inp.spellcheck = false;
+  inp.setAttribute("autocapitalize", "off"); inp.setAttribute("autocorrect", "off");
+  inp.setAttribute("aria-label", "Mot de passe d’exemple");
+  inp.placeholder = "Ex. : Le chat boit 12 cafés au lit !";
+  const barre = el("div", "mdp-barre"), rempli = el("div", "mdp-rempli");
+  barre.appendChild(rempli);
+  const verdict = el("p", "mdp-verdict"), liste = el("ul", "mdp-liste");
+  verdict.setAttribute("aria-live", "polite");
+  box.append(inp, barre, verdict, liste);
+  container.appendChild(box);
+  const noms = ["Très faible", "Très faible", "Faible", "Moyen", "Solide", "Très solide"];
+  const couleurs = ["#c62828", "#c62828", "#ef6c00", "#f9a825", "#2e8b4a", "#1b6b3a"];
+  inp.addEventListener("input", () => {
+    const v = inp.value;
+    liste.innerHTML = "";
+    if (!v) { rempli.style.width = "0"; verdict.textContent = ""; return; }
+    const r = evaluerMdp(v);
+    rempli.style.width = Math.max(8, r.niveau / 5 * 100) + "%";
+    rempli.style.background = couleurs[r.niveau];
+    verdict.textContent = "Niveau : " + noms[r.niveau];
+    r.criteres.forEach(c => liste.appendChild(el("li", "", (c.ok ? "✅ " : "❌ ") + c.t)));
+  });
 }
 
 function renderFinalQuiz(it, container){
