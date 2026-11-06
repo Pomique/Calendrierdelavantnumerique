@@ -158,7 +158,7 @@ dialog[open]{animation:ouvre .35s cubic-bezier(.2,.9,.3,1.2)}
 .progress{width:min(360px,80%);height:10px;border-radius:99px;background:rgba(251,243,223,.12);margin:1rem auto .3rem;overflow:hidden}
 #barre{height:100%;width:0;background:linear-gradient(90deg,var(--or),#f6d77c);border-radius:99px;transition:width .5s}
 #prog-txt{font-size:.85rem;color:var(--gris);margin-top:.2rem}
-.pastille.jeu{background:#0f766e}
+.pastille.jeu{background:#0f766e} .pastille.ressource{background:#1d4ed8}
 #panneau-test{position:fixed;left:1rem;bottom:1rem;z-index:20;background:var(--creme);color:var(--encre);border:2px solid var(--or);border-radius:12px;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.5rem;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:270px}
 #panneau-test[hidden]{display:none}
 #panneau-test button{font:inherit;cursor:pointer;padding:.5rem .8rem;border-radius:8px;border:2px solid var(--sapin2);background:#fff;color:var(--encre)}
@@ -214,7 +214,7 @@ footer a{color:var(--or)}
 </main>
 
 <footer>
-  <p>Besoin d’aide ? <b>3018</b> : cyberharcèlement (gratuit, anonyme). <b>17Cyber</b> et <a href="https://www.cybermalveillance.gouv.fr" target="_blank" rel="noopener">cybermalveillance.gouv.fr</a> : piratage et arnaques.</p>
+  <p>Besoin d’aide ? <b>3018</b> : cyberharcèlement (gratuit, anonyme). <a href="https://17cyber.gouv.fr/" target="_blank" rel="noopener">17Cyber</a> et <a href="https://www.cybermalveillance.gouv.fr" target="_blank" rel="noopener">cybermalveillance.gouv.fr</a> : piratage et arnaques.</p>
   <p style="margin-top:.8rem">Sources : <a href="https://www.cybermalveillance.gouv.fr" target="_blank" rel="noopener">cybermalveillance.gouv.fr</a>, <a href="https://3018.fr" target="_blank" rel="noopener">3018.fr</a>, <a href="https://www.internet-signalement.gouv.fr" target="_blank" rel="noopener">internet-signalement.gouv.fr</a>, <a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>, <a href="https://eduscol.education.fr" target="_blank" rel="noopener">Éduscol</a>.</p>
   <p style="margin-top:.5rem">Ce site ne collecte aucune donnée personnelle : tes cases ouvertes, ton score et ton prénom restent dans ton navigateur.</p>
 </footer>
@@ -245,6 +245,7 @@ const CATS = {
   synthese:{label:"Pour finir"},
   quiz:{label:"Mini-Quiz"},
   video:{label:"Capsule Vidéo"},
+  ressource:{label:"Site officiel"},
   jeu:{label:"Mini-jeu"}
 };
 
@@ -253,7 +254,7 @@ const DATA = [
  {c:"harcelement",t:"Reconnaître le cyberharcèlement",x:"Moqueries répétées, rumeurs, photos humiliantes, messages d’insultes, faux profils : quand les attaques se répètent en ligne, c’est du cyberharcèlement. Ce n’est jamais de ta faute, et tu n’as pas à l’endurer seul.",r:"Parles-en vite à un adulte, à un ami de confiance, ou appelle directement le 3018 (gratuit et anonyme)."},
  {
    c:"quiz", type:"quiz", t:"Mini-Quiz : Mots de passe & 2FA",
-   intro:"Teste tes réflexes sur la sécurité de base en 3 questions :",
+   intro:"Ton mot de passe est la clé de ta vie numérique : plus il est long et unique, mieux il te protège. Et si tu en as trop pour tout retenir, un gestionnaire de mots de passe s’en charge pour toi. Teste tes réflexes en 3 questions :",
    questions:[
      {q:"1. Quelle est la meilleure option pour un mot de passe ?", options:["Un mot de 6 lettres avec ton prénom","Une phrase secrète longue et unique avec symboles","Le même mot de passe partout pour ne pas l'oublier"], correct:1},
      {q:"2. À quoi sert la double authentification (2FA) ?", options:["À doubler la vitesse d'Internet","À ajouter une validation par code en plus du mot de passe","À supprimer les pubs"], correct:1},
@@ -272,9 +273,10 @@ const DATA = [
    ]
  },
  {
-   c:"video", type:"video", t:"Comprendre le Phishing (Hameçonnage)",
-   intro:"Découvre la vidéo pour apprendre à déjouer les pièges des arnaques par SMS ou emails.",
-   lien:"https://www.youtube.com/watch?v=CHANGER_ICI_PAR_TON_LIEN",
+   c:"ressource", type:"ressource", t:"Comprendre le phishing : la fiche officielle",
+   intro:"Un message louche dans ta boîte mail ou tes SMS ? Le site officiel de l’État Cybermalveillance.gouv.fr explique comment reconnaître l’hameçonnage et quoi faire si tu es tombé dans le piège.",
+   lien:"https://www.cybermalveillance.gouv.fr/tous-nos-contenus/fiches-reflexes/hameconnage-phishing",
+   bouton:"🔗 Ouvrir la fiche sur cybermalveillance.gouv.fr",
    desc:"Analyse toujours l'adresse de l'expéditeur et passe ta souris sur les liens sans cliquer avant d'entrer la moindre information personnelle."
  },
  {c:"harcelement",t:"Garde les preuves",x:"Fais des captures d’écran de chaque message, commentaire ou publication. Note aussi le pseudo, l’adresse (URL), la date et l’heure. Ne supprime rien, même si c’est pénible à relire.",r:"Sans preuves, il est beaucoup plus difficile de faire retirer les contenus ou de porter plainte."},
@@ -301,7 +303,7 @@ const DATA = [
      {q:"3. Partager une photo intime d'un camarade sans son accord, c'est :", options:["Une simple blague entre amis","Interdit par la loi et punissable","Autorisé si c'est en privé"], correct:1}
    ]
  },
- {c:"attaque",t:"La sauvegarde 3-2-1",x:"Pour ne jamais perdre tes photos et tes documents : 3 copies de tes fichiers, sur 2 supports différents (par exemple ton ordinateur et un disque dur externe), dont 1 copie hors site.",r:"Une sauvegarde qu’on n’a jamais testée est une sauvegarde incertaine."},
+ {c:"attaque",t:"Sauvegarde tes photos",x:"Si ton téléphone tombe à l’eau ou se fait voler, tes photos peuvent disparaître pour toujours. Deux gestes simples : active la sauvegarde automatique dans iCloud (iPhone) ou dans Google Photos / Google Drive (Android), et fais de temps en temps une copie sur une clé USB ou un disque dur. Comme ça, tes souvenirs existent à deux endroits.",r:"Cloud + clé USB : tes photos sont à l’abri. Les pros appellent ça la règle 3-2-1 : 3 copies, sur 2 supports différents, dont 1 hors de chez toi."},
  {c:"harcelement",t:"Signaler sur PHAROS",x:"Pour un contenu illégal (menaces, injures racistes, appels à la haine, images violentes ou sexuelles), tu peux le signaler sur la plateforme officielle internet-signalement.gouv.fr.",r:"Tu peux signaler même si tu n’es pas la victime directe."},
  {c:"attaque",t:"Le Wi-Fi public, prudence",x:"Sur un Wi-Fi ouvert (gare, café, centre commercial), d’autres personnes peuvent espionner ou t’envoyer vers de faux sites. Évite d’y entrer tes mots de passe ou d’y faire des achats.",r:"Pour les opérations sensibles, utilise ta 4G/5G ou un VPN de confiance."},
  {c:"harcelement",t:"Sextorsion : on ne paie pas",x:"Un inconnu obtient des photos intimes puis menace de les diffuser si tu ne paies pas. Si ça t’arrive : ne paie pas, coupe le contact, garde les preuves, bloque et signale. Tu es la victime, pas le coupable.",r:"Contacte le 3018 ou la police."},
@@ -322,7 +324,7 @@ const DATA = [
    }
  },
  {c:"harcelement",t:"Images intimes diffusées sans accord",x:"Partager une photo ou une vidéo intime sans accord est interdit par la loi. Si c’est toi, demande le retrait, garde les preuves et porte plainte. Si on te l’envoie, ne la partage pas.",r:"Ne transfère jamais ce type de contenu."},
- {c:"attaque",t:"Les QR codes piégés",x:"Un QR code collé sur un parking ou un menu peut mener vers un faux site de paiement. Un autocollant par-dessus un vrai code est une technique courante de piège (quishing).",r:"Vérifie l'URL avant de payer ou de t'identifier."},
+ {c:"attaque",t:"Les QR codes piégés",x:"Au restaurant, un QR code collé sur la table promet le menu… mais un autocollant a été posé par-dessus le vrai code : il t’envoie sur un faux site qui réclame ta carte bancaire. Même piège sur une borne de recharge ou dans un parking : « payez ici » mène à un faux site de paiement. C’est le quishing, le phishing par QR code.",r:"Après le scan, regarde l’adresse affichée : si elle te semble bizarre, ferme la page. Au moindre doute, demande à un employé ou paie autrement."},
  {c:"harcelement",t:"Sécuriser tes comptes",x:"Passe tes profils en réseau social en privé, choisis qui peut te contacter et limite les infos visibles (école, adresse). Moins l’agresseur a d’éléments sur toi, moins il peut agir.",r:"Prends 10 minutes pour vérifier tes paramètres de confidentialité."},
  {c:"attaque",t:"Vérifier qu’un site est fiable",x:"Le petit cadenas ne prouve pas que le site est honnête : il indique seulement que la connexion est chiffrée. Regarde l'adresse en entier, les mentions légales et les avis indépendants.",r:"Une offre trop belle pour être vraie est louche."},
  {c:"harcelement",t:"Témoin : ne reste pas spectateur",x:"Liker, partager ou rire d’un contenu humiliant, c’est participer au harcèlement. Tu peux signaler le contenu et écrire en privé à la personne pour lui apporter ton soutien.",r:"Un seul message de soutien peut tout changer."},
@@ -432,7 +434,7 @@ function ouvrir(jour){
 
   if (it.type === "quiz") {
     renderMiniQuiz(it, contenu);
-  } else if (it.type === "video") {
+  } else if (it.type === "video" || it.type === "ressource") {
     renderVideo(it, contenu);
   } else if (it.type === "vraifaux") {
     renderVraiFaux(it, contenu);
@@ -533,7 +535,7 @@ function renderVideo(it, container){
     btn.style.display = "inline-block";
     btn.style.marginTop = "1rem";
     btn.style.textDecoration = "none";
-    btn.textContent = "▶ Accéder à la vidéo YouTube";
+    btn.textContent = it.bouton || "▶ Accéder à la vidéo YouTube";
     container.appendChild(btn);
   }
 
