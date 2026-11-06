@@ -32,6 +32,7 @@ header h1{
   font-size:clamp(2rem,6vw,3.4rem);line-height:1.1;color:var(--or);
   text-shadow:0 2px 20px rgba(233,191,91,.25);margin-bottom:.8rem;
 }
+header .intro{color:var(--gris);line-height:1.6;font-size:1.02rem}
 #statut{
   display:inline-block;margin-top:1.2rem;padding:.5rem 1.1rem;border-radius:99px;
   background:rgba(251,243,223,.08);border:1px solid rgba(233,191,91,.4);color:var(--creme);font-size:.95rem;
@@ -158,6 +159,7 @@ dialog[open]{animation:ouvre .35s cubic-bezier(.2,.9,.3,1.2)}
 .progress{width:min(360px,80%);height:10px;border-radius:99px;background:rgba(251,243,223,.12);margin:1rem auto .3rem;overflow:hidden}
 #barre{height:100%;width:0;background:linear-gradient(90deg,var(--or),#f6d77c);border-radius:99px;transition:width .5s}
 #prog-txt{font-size:.85rem;color:var(--gris);margin-top:.2rem}
+.quiz-resultat .corr-item{color:var(--encre)}
 .pastille.jeu{background:#0f766e} .pastille.ressource{background:#1d4ed8}
 #panneau-test{position:fixed;left:1rem;bottom:1rem;z-index:20;background:var(--creme);color:var(--encre);border:2px solid var(--or);border-radius:12px;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.5rem;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:270px}
 #panneau-test[hidden]{display:none}
@@ -204,6 +206,7 @@ footer a{color:var(--or)}
 
 <header>
   <h1 class="serif">Calendrier de l’Avent numérique</h1>
+  <p class="intro">24 jours pour te protéger, tester tes connaissances et maîtriser ta sécurité en ligne. Du 1<sup>er</sup> au 24 décembre.</p>
   <span id="statut" role="status"></span>
   <div class="progress" aria-hidden="true"><div id="barre"></div></div>
   <p id="prog-txt"></p>
@@ -256,9 +259,9 @@ const DATA = [
    c:"quiz", type:"quiz", t:"Mini-Quiz : Mots de passe & 2FA",
    intro:"Ton mot de passe est la clé de ta vie numérique : plus il est long et unique, mieux il te protège. Et si tu en as trop pour tout retenir, un gestionnaire de mots de passe s’en charge pour toi. Teste tes réflexes en 3 questions :",
    questions:[
-     {q:"1. Quelle est la meilleure option pour un mot de passe ?", options:["Un mot de 6 lettres avec ton prénom","Une phrase secrète longue et unique avec symboles","Le même mot de passe partout pour ne pas l'oublier"], correct:1},
-     {q:"2. À quoi sert la double authentification (2FA) ?", options:["À doubler la vitesse d'Internet","À ajouter une validation par code en plus du mot de passe","À supprimer les pubs"], correct:1},
-     {q:"3. Un gestionnaire de mots de passe est-il sécurisé ?", options:["Oui, il chiffre et protège tous tes codes dans un coffre-fort numérique","Non, c'est dangereux","C'est pareil qu'un post-it sur l'écran"], correct:0}
+     {q:"1. Quelle est la meilleure option pour un mot de passe ?", options:["Un mot de 6 lettres avec ton prénom","Une phrase secrète longue et unique avec symboles","Le même mot de passe partout pour ne pas l'oublier"], correct:1, explain:"Une phrase longue et unique est très difficile à deviner, et un mot de passe différent par compte évite qu’un seul piratage ouvre tous les autres."},
+     {q:"2. À quoi sert la double authentification (2FA) ?", options:["À doubler la vitesse d'Internet","À ajouter une validation par code en plus du mot de passe","À supprimer les pubs"], correct:1, explain:"Même si un pirate vole ton mot de passe, il lui faut encore ton code ou ta validation sur ton téléphone."},
+     {q:"3. Un gestionnaire de mots de passe est-il sécurisé ?", options:["Oui, il chiffre et protège tous tes codes dans un coffre-fort numérique","Non, c'est dangereux","C'est pareil qu'un post-it sur l'écran"], correct:0, explain:"Il range tes mots de passe dans un coffre-fort chiffré, protégé par un seul mot de passe maître : c’est bien plus sûr que de réutiliser les mêmes codes."}
    ]
  },
  {c:"harcelement",t:"Ne réponds pas aux agresseurs",x:"Répondre à chaud, c’est donner à l’agresseur ce qu’il cherche et risquer d’aggraver la situation. Respire, ne réponds pas et passe aux étapes suivantes : preuves, blocage, signalement.",r:"Ne réponds pas, ne te venge pas : protège-toi d’abord."},
@@ -298,9 +301,9 @@ const DATA = [
    c:"quiz", type:"quiz", t:"Mini-Quiz : Réflexes face au Harcèlement",
    intro:"Vérifie tes connaissances sur les bons gestes en cas de cyberviolence.",
    questions:[
-     {q:"1. Que faut-il faire en premier si on reçoit des insultes en ligne ?", options:["Répondre par des insultes encore plus fortes","Faire des captures d'écran et bloquer l'auteur","Effacer son propre compte et ne rien dire"], correct:1},
-     {q:"2. Quel est le numéro national gratuit et anonyme contre le cyberharcèlement en France ?", options:["15","3018","112"], correct:1},
-     {q:"3. Partager une photo intime d'un camarade sans son accord, c'est :", options:["Une simple blague entre amis","Interdit par la loi et punissable","Autorisé si c'est en privé"], correct:1}
+     {q:"1. Que faut-il faire en premier si on reçoit des insultes en ligne ?", options:["Répondre par des insultes encore plus fortes","Faire des captures d'écran et bloquer l'auteur","Effacer son propre compte et ne rien dire"], correct:1, explain:"Les captures servent de preuves et le blocage coupe le contact. Répondre ou tout effacer aggrave souvent la situation."},
+     {q:"2. Quel est le numéro national gratuit et anonyme contre le cyberharcèlement en France ?", options:["15","3018","112"], correct:1, explain:"Le 3018 est gratuit, anonyme et confidentiel, pour les victimes comme pour les témoins."},
+     {q:"3. Partager une photo intime d'un camarade sans son accord, c'est :", options:["Une simple blague entre amis","Interdit par la loi et punissable","Autorisé si c'est en privé"], correct:1, explain:"C’est interdit par la loi, même « en privé » : ne la partage jamais et signale-la."}
    ]
  },
  {c:"attaque",t:"Sauvegarde tes photos",x:"Si ton téléphone tombe à l’eau ou se fait voler, tes photos peuvent disparaître pour toujours. Deux gestes simples : active la sauvegarde automatique dans iCloud (iPhone) ou dans Google Photos / Google Drive (Android), et fais de temps en temps une copie sur une clé USB ou un disque dur. Comme ça, tes souvenirs existent à deux endroits.",r:"Cloud + clé USB : tes photos sont à l’abri. Les pros appellent ça la règle 3-2-1 : 3 copies, sur 2 supports différents, dont 1 hors de chez toi."},
@@ -326,7 +329,14 @@ const DATA = [
  {c:"harcelement",t:"Images intimes diffusées sans accord",x:"Partager une photo ou une vidéo intime sans accord est interdit par la loi. Si c’est toi, demande le retrait, garde les preuves et porte plainte. Si on te l’envoie, ne la partage pas.",r:"Ne transfère jamais ce type de contenu."},
  {c:"attaque",t:"Les QR codes piégés",x:"Au restaurant, un QR code collé sur la table promet le menu… mais un autocollant a été posé par-dessus le vrai code : il t’envoie sur un faux site qui réclame ta carte bancaire. Même piège sur une borne de recharge ou dans un parking : « payez ici » mène à un faux site de paiement. C’est le quishing, le phishing par QR code.",r:"Après le scan, regarde l’adresse affichée : si elle te semble bizarre, ferme la page. Au moindre doute, demande à un employé ou paie autrement."},
  {c:"harcelement",t:"Sécuriser tes comptes",x:"Passe tes profils en réseau social en privé, choisis qui peut te contacter et limite les infos visibles (école, adresse). Moins l’agresseur a d’éléments sur toi, moins il peut agir.",r:"Prends 10 minutes pour vérifier tes paramètres de confidentialité."},
- {c:"attaque",t:"Vérifier qu’un site est fiable",x:"Le petit cadenas ne prouve pas que le site est honnête : il indique seulement que la connexion est chiffrée. Regarde l'adresse en entier, les mentions légales et les avis indépendants.",r:"Une offre trop belle pour être vraie est louche."},
+ {c:"jeu", type:"vraisite", t:"Quel est le vrai site ?",
+   intro:"Le petit cadenas ne prouve pas qu’un site est honnête : il montre seulement que la connexion est chiffrée. Ce qui compte, c’est l’adresse. Dans chaque cas, retrouve le vrai site.",
+   rounds:[
+     {q:"Tu veux consulter ton compte Ameli (Assurance Maladie). Quelle adresse choisis-tu ?", options:["ameli.fr","ameli-remboursement.top","ameli.fr-secu.com"], vrai:0, e:"Le vrai site est ameli.fr. Les faux ajoutent des mots, utilisent des extensions comme .top, ou glissent le vrai nom au début d’une autre adresse."},
+     {q:"Tu veux suivre un colis La Poste. Quelle adresse choisis-tu ?", options:["laposte.fr","la-poste-suivi-colis.xyz","laposte.fr.livraison-info.com"], vrai:0, e:"Le vrai nom de domaine est ce qui précède la dernière extension : dans le 3e exemple, c’est « livraison-info.com », qui n’a rien à voir avec La Poste."},
+     {q:"Tu dois régler une amende. Quel site est officiel ?", options:["amendes.gouv.fr","amendes-gouv-paiement.com","paiement-amende.net"], vrai:0, e:"Les sites de l’État finissent par .gouv.fr. Un nom qui ressemble à « gouv » mais se termine par .com ou .net est un piège."}
+   ]
+ },
  {c:"harcelement",t:"Témoin : ne reste pas spectateur",x:"Liker, partager ou rire d’un contenu humiliant, c’est participer au harcèlement. Tu peux signaler le contenu et écrire en privé à la personne pour lui apporter ton soutien.",r:"Un seul message de soutien peut tout changer."},
  {c:"attaque",t:"Piraté ? Les bons réflexes",x:"Si tu penses qu’un compte a été piraté : change vite le mot de passe, active la 2FA, déconnecte les autres appareils et préviens tes contacts. Rends-toi sur cybermalveillance.gouv.fr.",r:"Agis rapidement pour limiter les dégâts."},
  {
@@ -442,6 +452,8 @@ function ouvrir(jour){
     renderArnaque(it, contenu);
   } else if (it.type === "scenario") {
     renderScenario(it, contenu);
+  } else if (it.type === "vraisite") {
+    renderVraiSite(it, contenu);
   } else if (it.type === "final") {
     renderFinalQuiz(it, contenu);
   } else {
@@ -479,11 +491,11 @@ function renderMiniQuiz(it, container){
   it.questions.forEach((qObj, idx) => {
     const qDiv = document.createElement("div");
     qDiv.className = "q-item";
-    qDiv.innerHTML = `<p>${qObj.q}</p>`;
+    qDiv.innerHTML = `<p>${esc(qObj.q)}</p>`;
     const opts = document.createElement("div");
     opts.className = "q-options";
     qObj.options.forEach((optText, oIdx) => {
-      opts.innerHTML += `<label><input type="radio" name="q${idx}" value="${oIdx}"> ${optText}</label>`;
+      opts.innerHTML += `<label><input type="radio" name="q${idx}" value="${oIdx}"> ${esc(optText)}</label>`;
     });
     qDiv.appendChild(opts);
     box.appendChild(qDiv);
@@ -499,20 +511,26 @@ function renderMiniQuiz(it, container){
 
   btn.addEventListener("click", () => {
     let score = 0;
+    let html = '<div class="correction-container"><h3>Correction :</h3>';
     it.questions.forEach((qObj, idx) => {
       const selected = box.querySelector(`input[name="q${idx}"]:checked`);
-      if (selected && parseInt(selected.value) === qObj.correct) {
-        score++;
-      }
+      const u = selected ? parseInt(selected.value) : -1;
+      const ok = u === qObj.correct;
+      if (ok) score++;
+      html += `
+        <div class="corr-item ${ok ? 'correct' : 'incorrect'}">
+          <div class="corr-q">${esc(qObj.q)}</div>
+          <div class="corr-ans">${ok ? '✅' : '❌'} <b>Ta réponse :</b> ${esc(u !== -1 ? qObj.options[u] : "Aucune réponse donnée")}</div>
+          ${ok ? '' : `<div class="corr-ans"><b>Bonne réponse :</b> ${esc(qObj.options[qObj.correct])}</div>`}
+          ${qObj.explain ? `<div class="corr-explain">👉 ${esc(qObj.explain)}</div>` : ''}
+        </div>`;
     });
+    html += '</div>';
+    const parfait = score === it.questions.length;
     res.style.display = "block";
-    if (score === it.questions.length) {
-      res.className = "quiz-resultat succes";
-      res.textContent = `Bravo ! ${score}/${it.questions.length} - Sans faute, tu maîtrises parfaitement le sujet !`;
-    } else {
-      res.className = "quiz-resultat echec";
-      res.textContent = `Tu as ${score}/${it.questions.length} bonnes réponses. Relis bien les conseils pour progresser !`;
-    }
+    res.className = "quiz-resultat " + (parfait ? "succes" : "echec");
+    res.innerHTML = `<b>${parfait ? "Bravo ! " : ""}${score}/${it.questions.length}</b> ${parfait ? "Sans faute, tu maîtrises le sujet !" : "Relis bien les explications pour progresser !"}` + html;
+    if (parfait) confettis(40);
   });
 
   box.appendChild(btn);
@@ -663,6 +681,37 @@ function renderScenario(it, container){
     if (f.ok) confettis(40);
   }
   aller("debut");
+}
+
+function renderVraiSite(it, container){
+  container.appendChild(el("p", "texte", it.intro));
+  let bons = 0, faits = 0;
+  const bilan = el("div", "quiz-resultat succes");
+  it.rounds.forEach(r => {
+    const bloc = el("div", "q-item"), liste = el("div", "q-options"), retour = el("p", "vf-retour");
+    bloc.appendChild(el("p", "", r.q));
+    const boutons = melanger(r.options.map((t, i) => ({t, ok: i === r.vrai}))).map(o => {
+      const b = el("button", "vf-btn", o.t);
+      b.type = "button";
+      b.addEventListener("click", () => {
+        boutons.forEach(x => x.b.disabled = true);
+        boutons.forEach(x => { if (x.o.ok) x.b.classList.add("bon"); });
+        if (o.ok) bons++; else b.classList.add("mauvais");
+        faits++;
+        retour.textContent = (o.ok ? "✅ Bien vu ! " : "❌ Attention ! ") + r.e;
+        if (faits === it.rounds.length) {
+          bilan.style.display = "block";
+          bilan.textContent = "Score : " + bons + " / " + it.rounds.length;
+          if (bons === it.rounds.length) confettis(50);
+        }
+      });
+      liste.appendChild(b);
+      return {b, o};
+    });
+    bloc.append(liste, retour);
+    container.appendChild(bloc);
+  });
+  container.appendChild(bilan);
 }
 
 function renderFinalQuiz(it, container){
